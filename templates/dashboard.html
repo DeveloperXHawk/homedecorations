@@ -1,0 +1,499 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ananta Admin | Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-glow: rgba(201, 168, 76, 0.3);
+            --deep: #0A0A0F;
+            --surface: #111118;
+            --surface2: #1A1A24;
+            --glow: 0 0 25px var(--gold-glow);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--deep);
+            background: radial-gradient(circle at 50% -20%, rgba(201, 168, 76, 0.15) 0%, var(--deep) 80%);
+            color: #F0EDE8;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(17, 17, 24, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(201, 168, 76, 0.1);
+            position: fixed;
+            height: 100vh;
+            padding: 40px 20px;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: 26px;
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: 4px;
+            text-shadow: var(--glow);
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            padding: 14px 25px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-link i { margin-right: 15px; width: 20px; text-align: center; }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold);
+            background: rgba(201, 168, 76, 0.08);
+            box-shadow: inset 0 0 15px rgba(201, 168, 76, 0.05);
+        }
+
+        .main-panel {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-area h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        .glass-card {
+            background: rgba(26, 26, 36, 0.45) !important;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(201, 168, 76, 0.15);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .table { 
+            color: #aaa !important; 
+            margin: 0; 
+            background: transparent !important;
+            border-collapse: separate;
+        }
+        
+        .table > :not(caption) > * > * {
+            background-color: transparent !important;
+            color: inherit;
+            box-shadow: none !important;
+            border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+        }
+
+        .table thead th {
+            color: var(--gold) !important;
+            background: rgba(201, 168, 76, 0.08) !important;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 22px;
+            font-weight: 700;
+            border: none !important;
+        }
+
+        .table tbody td {
+            padding: 24px 22px;
+            vertical-align: middle;
+        }
+
+        .client-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: #fff;
+            display: block;
+        }
+
+        .status-dropdown {
+            background: #0d0d12 !important;
+            color: var(--gold) !important;
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .status-dropdown:hover { border-color: var(--gold); box-shadow: var(--glow); }
+
+        .btn-delete {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            transition: 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #ff4d4d;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .modal-content {
+            background: var(--surface2);
+            border: 1px solid var(--gold);
+            color: white;
+        }
+        .carousel-item img {
+            border-radius: 8px;
+            background-color: #000;
+            height: 400px;
+            object-fit: contain;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; }
+            .sidebar-brand, .nav-link span { display: none; }
+            .main-panel { margin-left: 80px; width: calc(100% - 80px); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="sidebar">
+        <div class="sidebar-brand">ANANTA</div>
+        <ul class="nav-menu p-0">
+            <li class="nav-item"><a onclick="showTab('enquiries')" id="enq-nav" class="nav-link active"><i class="fas fa-envelope-open-text"></i> <span>Enquiries</span></a></li>
+            <li class="nav-item"><a onclick="showTab('products')" id="prod-nav" class="nav-link"><i class="fas fa-layer-group"></i> <span>Products</span></a></li>
+            <li class="nav-item"><a onclick="showTab('gallery')" id="gall-nav" class="nav-link"><i class="fas fa-images"></i> <span>Gallery</span></a></li>
+            <li class="nav-item" style="margin-top: auto;">
+                <a href="{% url 'logout' %}" class="nav-link" style="color: #ff4d4d;">
+                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-panel">
+        <div class="header-area d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <p style="color: var(--gold); letter-spacing: 4px; margin: 0; font-weight: 600; font-size: 0.8rem;">SYSTEM OVERVIEW</p>
+                <h2 id="section-title">Lead <span style="color: var(--gold)">Management</span></h2>
+            </div>
+            <div class="d-flex align-items-center">
+                <button id="add-prod-btn" class="status-dropdown me-4" style="display:none;" data-bs-toggle="modal" data-bs-target="#productModal">
+                    <i class="fas fa-plus me-2"></i> Add Product
+                </button>
+                <button id="add-gall-btn" class="status-dropdown me-4" style="display:none;" data-bs-toggle="modal" data-bs-target="#galleryModal">
+                    <i class="fas fa-plus me-2"></i> New Project
+                </button>
+                <div class="text-end me-3">
+                    <div style="font-size: 0.75rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px;">Admin Panel</div>
+                    <div style="font-weight: 700; color: #fff;">ANANTA HOME SOLUTIONS</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="enquiries-tab" class="glass-card">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Client Details</th>
+                            <th>Requirement</th>
+                            <th>Location</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enq in enquiries %}
+                        <tr>
+                            <td>
+                                <span class="client-name">{{ enq.name }}</span>
+                                <span style="color: var(--gold); font-weight: 600;"><i class="fas fa-phone-alt me-1"></i> {{ enq.phone }}</span>
+                            </td>
+                            <td>
+                                <div style="color: #fff; font-weight: 600;">{{ enq.service }}</div>
+                                <div style="font-size: 0.75rem; color: #666;">{{ enq.created_at|date:"d M, Y" }}</div>
+                            </td>
+                            <td><i class="fas fa-map-marker-alt" style="color: #ff4d4d;"></i> <span style="color: white; margin-left: 5px;">{{ enq.location }}</span></td>
+                            <td><span style="color: var(--gold); font-weight: 700;">{{ enq.budget }}</span></td>
+                            <td>
+                                <form action="{% url 'update_enquiry' enq.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <select name="status" class="status-dropdown" onchange="this.form.submit()">
+                                        <option value="pending" {% if enq.status == 'pending' %}selected{% endif %}>Pending</option>
+                                        <option value="done" {% if enq.status == 'done' %}selected{% endif %}>Completed</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'delete_enquiry' enq.id %}" class="btn-delete" onclick="return confirm('Delete this record?')"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center py-5">NO RECENT ENQUIRIES</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="products-tab" class="glass-card" style="display: none;">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Media Preview</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prod in products %}
+                        <tr>
+                            <td>
+                                <button class="status-dropdown" data-bs-toggle="modal" data-bs-target="#prodPreview{{ prod.id }}">
+                                    <i class="fas fa-images me-1"></i> {{ prod.images.all.count }} Photos
+                                </button>
+
+                                <div class="modal fade" id="prodPreview{{ prod.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header border-0">
+                                                <h5 class="modal-title" style="color: var(--gold);">{{ prod.name }}</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-0">
+                                                <div id="prodCarousel{{ prod.id }}" class="carousel slide" data-bs-ride="carousel">
+                                                    <div class="carousel-inner">
+                                                        {% for img in prod.images.all %}
+                                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                            <img src="{{ img.image.url }}" class="d-block w-100">
+                                                        </div>
+                                                        {% empty %}
+                                                        <div class="carousel-item active">
+                                                            <div class="d-flex align-items-center justify-content-center bg-dark" style="height:400px;">NO IMAGES</div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% if prod.images.all.count > 1 %}
+                                                    <button class="carousel-control-prev" type="button" data-bs-target="#prodCarousel{{ prod.id }}" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                    <button class="carousel-control-next" type="button" data-bs-target="#prodCarousel{{ prod.id }}" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="client-name">{{ prod.name }}</span></td>
+                            <td><span class="badge bg-dark text-gold">{{ prod.get_category_display }}</span></td>
+                            <td><span style="color: var(--gold); font-weight: 700;">{{ prod.price }}</span></td>
+                            <td class="text-end">
+                                <a href="{% url 'delete_product' prod.id %}" class="btn-delete" onclick="return confirm('Remove product?')"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center py-5">NO PRODUCTS ADDED</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="gallery-tab" class="glass-card" style="display: none;">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Project Title</th>
+                            <th>Media Preview</th>
+                            <th>Date Created</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                        <tr>
+                            <td><span class="client-name">{{ project.title }}</span></td>
+                            <td>
+                                <button class="status-dropdown" data-bs-toggle="modal" data-bs-target="#previewModal{{ project.id }}">
+                                    <i class="fas fa-images me-1"></i> View {{ project.images.all.count }} Photos
+                                </button>
+
+                                <div class="modal fade" id="previewModal{{ project.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header border-0">
+                                                <h5 class="modal-title" style="color: var(--gold);">{{ project.title }}</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-0">
+                                                <div id="carousel{{ project.id }}" class="carousel slide" data-bs-ride="carousel">
+                                                    <div class="carousel-inner">
+                                                        {% for img in project.images.all %}
+                                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                            <img src="{{ img.image.url }}" class="d-block w-100">
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% if project.images.all.count > 1 %}
+                                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ project.id }}" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ project.id }}" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ project.created_at|date:"d M, Y" }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'delete_gallery' project.id %}" class="btn-delete" onclick="return confirm('Delete this entire project?')"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-5">NO GALLERY PROJECTS</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{% url 'add_product' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header border-0"><h5 class="modal-title" style="color: var(--gold);">Add New Product</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body">
+                        <input type="text" name="name" class="form-control mb-3" placeholder="Product Name" required>
+                        <select name="category" class="form-control mb-3"><option value="kitchen">Kitchen</option><option value="doors">Doors</option><option value="furniture">Furniture</option><option value="decor">Decor</option></select>
+                        <input type="text" name="price" class="form-control mb-3" placeholder="Starting Price" required>
+                        <textarea name="description" class="form-control mb-3" placeholder="Description"></textarea>
+                        <label class="text-white-50 small mb-1">Select Multiple Product Images:</label>
+                        <input type="file" name="images" class="form-control" accept="image/*" multiple required>
+                    </div>
+                    <div class="modal-footer border-0"><button type="submit" class="status-dropdown w-100">Upload Product</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="galleryModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{% url 'upload_gallery' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header border-0"><h5 class="modal-title" style="color: var(--gold);">New Gallery Project</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                    <div class="modal-body">
+                        <input type="text" name="title" class="form-control mb-3" placeholder="Project Title" required>
+                        <label class="text-white-50 small mb-1">Select Project Media:</label>
+                        <input type="file" name="images" class="form-control" multiple required>
+                    </div>
+                    <div class="modal-footer border-0"><button type="submit" class="status-dropdown w-100">Upload Project</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showTab(tab) {
+            const tabs = ['enquiries', 'products', 'gallery'];
+            tabs.forEach(t => {
+                const element = document.getElementById(`${t}-tab`);
+                const nav = document.getElementById(`${t === 'enquiries' ? 'enq' : t === 'products' ? 'prod' : 'gall'}-nav`);
+                if(element) element.style.display = t === tab ? 'block' : 'none';
+                if(nav) nav.classList.toggle('active', t === tab);
+            });
+            
+            document.getElementById('add-prod-btn').style.display = tab === 'products' ? 'block' : 'none';
+            document.getElementById('add-gall-btn').style.display = tab === 'gallery' ? 'block' : 'none';
+            
+            const titles = {
+                'enquiries': 'Lead <span style="color: var(--gold)">Management</span>',
+                'products': 'Product <span style="color: var(--gold)">Catalogue</span>',
+                'gallery': 'Portfolio <span style="color: var(--gold)">Gallery</span>'
+            };
+            document.getElementById('section-title').innerHTML = titles[tab];
+        }
+
+        // Background Particles Animation
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0; if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0; if (this.y < 0) this.y = canvas.height;
+            }
+            draw() { ctx.fillStyle = `rgba(201, 168, 76, ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for (let i = 0; i < 80; i++) particles.push(new Particle());
+        animate();
+    </script>
+</body>
+</html>
