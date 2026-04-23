@@ -193,6 +193,149 @@
             .sidebar-brand, .nav-link span { display: none; }
             .main-panel { margin-left: 80px; width: calc(100% - 80px); }
         }
+        /* --- Base Responsive Logic --- */
+
+/* 1. LAPTOP & DESKTOP (Large screens) */
+@media (min-width: 1025px) {
+    .sidebar { width: 280px; }
+    .main-panel { margin-left: 280px; width: calc(100% - 280px); }
+}
+
+/* 2. TABLETS & SMALL LAPTOPS (1024px to 768px) */
+@media (max-width: 1024px) {
+    .sidebar { 
+        width: 85px; 
+        padding: 40px 10px;
+    }
+    
+    /* Hide text labels and brand name */
+    .sidebar-brand, 
+    .nav-link span { 
+        display: none; 
+    }
+    
+    /* Center icons in the collapsed sidebar */
+    .nav-link {
+        justify-content: center;
+        padding: 15px 0;
+    }
+    
+    .nav-link i {
+        margin-right: 0;
+        font-size: 22px;
+    }
+
+    .main-panel { 
+        margin-left: 85px; 
+        width: calc(100% - 85px); 
+        padding: 30px; 
+    }
+
+    .header-area h2 {
+        font-size: 2rem;
+    }
+}
+
+/* 3. MOBILE PHONES (Below 767px) */
+@media (max-width: 767px) {
+    body {
+        flex-direction: column; /* Stack sidebar and content */
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative; /* Unfix from side */
+        padding: 15px;
+        border-right: none;
+        border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+    }
+
+    .sidebar-brand {
+        display: block; /* Show brand on mobile */
+        margin-bottom: 20px;
+        font-size: 20px;
+    }
+
+    .nav-menu {
+        display: flex;
+        justify-content: space-around;
+        margin: 0;
+    }
+
+    .nav-item {
+        margin-bottom: 0;
+    }
+
+    .nav-link {
+        padding: 10px;
+        font-size: 14px;
+        flex-direction: column;
+    }
+
+    .nav-link i {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    .nav-link span {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    .main-panel {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px 15px;
+    }
+
+    .header-area {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 20px;
+    }
+
+    .header-area .d-flex {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Force Table scroll on small screens */
+    .glass-card {
+        border-radius: 15px;
+        margin-top: 15px;
+    }
+
+    .table thead {
+        display: none; /* Optional: Hide headers for a card-like mobile view or keep for scroll */
+    }
+
+    /* Adjusting the modal for mobile */
+    .carousel-item img {
+        height: 250px;
+    }
+    
+    .status-dropdown {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* 4. EXTRA SMALL PHONES (Below 480px) */
+@media (max-width: 480px) {
+    .header-area h2 {
+        font-size: 1.5rem;
+    }
+    
+    .nav-link span {
+        display: none; /* Hide text icons on tiny screens to save space */
+    }
+    
+    .client-name {
+        font-size: 1rem;
+    }
+}
     </style>
 </head>
 <body>
