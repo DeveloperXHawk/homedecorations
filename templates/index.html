@@ -2100,11 +2100,7 @@
             <div class="product-card" data-category="{{ product.category }}">
                 <div class="product-img">
                     <span class="product-label label-top">⭐ Premium</span>
-                    {% if product.image %}
-    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-{% else %}
-    <img src="/static/images/default.png" alt="No Image" loading="lazy">
-{% endif %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
                 </div>
                 <div class="product-info">
                     <div class="product-name">{{ product.name }}</div>
