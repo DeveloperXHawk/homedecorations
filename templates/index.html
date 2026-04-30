@@ -2145,39 +2145,59 @@
             </div>
 
             <div class="products-grid" id="products-grid">
-                {% for product in products %}
-                <div class="product-card" data-category="{{ product.category }}">
-                    <div class="product-img">
-                        <span class="product-label label-top">⭐ Premium</span>
-                        {% if product.image and product.image.name %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                        {% else %}
-                        <img src="/static/images/default.jpg" alt="No Image">
-                        {% endif %}
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">{{ product.name }}</div>
-                        <div class="product-sub">{{ product.description|truncatewords:10 }}</div>
-                        <div class="product-price">₹{{ product.price }}</div>
-                        <div class="product-actions">
-                            <button class="btn-enquire" onclick="openEnquiry('{{ product.name }}')">Enquire Now</button>
-                            <button class="btn-wish" onclick="this.classList.toggle('active');">♡</button>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                {% for i in "12345678" %}
-                <div class="product-card" data-category="all" style="opacity: 0.5;">
-                    <div class="product-img"><img src="https://via.placeholder.com/400x300?text=No+Product+Added"></div>
-                    <div class="product-info">
-                        <div class="product-name">Empty Slot {{ forloop.counter }}</div>
-                        <div class="product-sub">Upload from dashboard to fill</div>
-                        <div class="product-price">₹ 0</div>
-                    </div>
-                </div>
-                {% endfor %}
-                {% endfor %}
+    {% for product in products %}
+    <div class="product-card" data-category="{{ product.category|lower }}">
+        
+        <div class="product-img">
+            <span class="product-label label-top">⭐ Premium</span>
+
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+            {% else %}
+                <img src="{% static 'images/default.jpg' %}" alt="No Image">
+            {% endif %}
+        </div>
+
+        <div class="product-info">
+            <div class="product-name">
+                {{ product.name|default:"Unnamed Product" }}
             </div>
+
+            <div class="product-sub">
+                {{ product.description|truncatewords:10 }}
+            </div>
+
+            <div class="product-price">
+                ₹{{ product.price|default:"0" }}
+            </div>
+
+            <div class="product-actions">
+                <button class="btn-enquire" onclick="openEnquiry(`{{ product.name }}`)">
+                    Enquire Now
+                </button>
+
+                <button class="btn-wish" onclick="this.classList.toggle('active');">
+                    ♡
+                </button>
+            </div>
+        </div>
+
+    </div>
+    {% empty %}
+        {% for i in "12345678" %}
+        <div class="product-card" data-category="all" style="opacity: 0.5;">
+            <div class="product-img">
+                <img src="https://via.placeholder.com/400x300?text=No+Product+Added">
+            </div>
+            <div class="product-info">
+                <div class="product-name">Empty Slot {{ forloop.counter }}</div>
+                <div class="product-sub">Upload from dashboard to fill</div>
+                <div class="product-price">₹ 0</div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endfor %}
+</div>
         </div>
     </section>
 

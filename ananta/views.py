@@ -29,21 +29,14 @@ def admin_dashboard(request):
 @login_required
 def add_product(request):
     if request.method == "POST":
-        image = request.FILES.get('image')
-
-        # ❌ Prevent product creation without image
-        if not image:
-            messages.error(request, "Image is required!")
-            return redirect('admin_dashboard')
-
+        # FILES.get('image') handles the upload
         Product.objects.create(
             name=request.POST.get('name'),
             category=request.POST.get('category'),
             description=request.POST.get('description'),
             price=request.POST.get('price'),
-            image=image
+            image=request.FILES.get('image')
         )
-
     return redirect('admin_dashboard')
 
 @login_required
